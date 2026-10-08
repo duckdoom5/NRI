@@ -1490,9 +1490,17 @@ NRI_INLINE Result DeviceVal::CreateDescriptorPool(const DescriptorPoolD3D12Desc&
     DescriptorPool* descriptorPoolImpl = nullptr;
     Result result = m_iWrapperD3D12Impl.CreateDescriptorPoolD3D12(m_Impl, descriptorPoolD3D12Desc, descriptorPoolImpl);
 
+    // A range of 0 extends to the unknown end of the heap
+    DescriptorPoolDesc descriptorPoolDesc = {};
+    descriptorPoolDesc.descriptorSetMaxNum = descriptorPoolD3D12Desc.descriptorSetMaxNum;
+    if (descriptorPoolD3D12Desc.d3d12ResourceDescriptorHeap)
+        descriptorPoolDesc.mutableMaxNum = descriptorPoolD3D12Desc.d3d12ResourceDescriptorNum ? descriptorPoolD3D12Desc.d3d12ResourceDescriptorNum : UINT32_MAX;
+    if (descriptorPoolD3D12Desc.d3d12SamplerDescriptorHeap)
+        descriptorPoolDesc.samplerMaxNum = descriptorPoolD3D12Desc.d3d12SamplerDescriptorNum ? descriptorPoolD3D12Desc.d3d12SamplerDescriptorNum : UINT32_MAX;
+
     descriptorPool = nullptr;
     if (result == Result::SUCCESS)
-        descriptorPool = (DescriptorPool*)Allocate<DescriptorPoolVal>(GetAllocationCallbacks(), *this, descriptorPoolImpl, descriptorPoolD3D12Desc.descriptorSetMaxNum);
+        descriptorPool = (DescriptorPool*)Allocate<DescriptorPoolVal>(GetAllocationCallbacks(), *this, descriptorPoolImpl, descriptorPoolDesc, true);
 
     return result;
 }

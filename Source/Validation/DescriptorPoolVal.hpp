@@ -68,8 +68,9 @@ NRI_INLINE Result DescriptorPoolVal::AllocateDescriptorSets(const PipelineLayout
             uint32_t descriptorNum = isVariableSized ? variableDescriptorNum : rangeDesc.descriptorNum;
             uint64_t requiredDescriptorNum = uint64_t(descriptorNum) * instanceNum;
 
-            uint32_t descriptorType = (uint32_t)rangeDesc.descriptorType;
-            uint32_t descriptorMaxNum = GetDescriptorMaxNum(m_Desc, rangeDesc.descriptorType);
+            DescriptorType heapDescriptorType = (m_SharedResourceHeap && rangeDesc.descriptorType != DescriptorType::SAMPLER) ? DescriptorType::MUTABLE : rangeDesc.descriptorType;
+            uint32_t descriptorType = (uint32_t)heapDescriptorType;
+            uint32_t descriptorMaxNum = GetDescriptorMaxNum(m_Desc, heapDescriptorType);
             uint32_t& allocatedDescriptorNum = descriptorNums[descriptorType];
 
             bool enoughDescriptors = allocatedDescriptorNum <= descriptorMaxNum && requiredDescriptorNum <= descriptorMaxNum - allocatedDescriptorNum;

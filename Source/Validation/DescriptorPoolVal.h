@@ -18,10 +18,11 @@ struct DescriptorPoolVal final : public ObjectVal {
             m_DescriptorSets.emplace_back(DescriptorSetVal(device));
     }
 
-    DescriptorPoolVal(DeviceVal& device, DescriptorPool* descriptorPool, const DescriptorPoolDesc& descriptorPoolDesc)
+    DescriptorPoolVal(DeviceVal& device, DescriptorPool* descriptorPool, const DescriptorPoolDesc& descriptorPoolDesc, bool sharedResourceHeap = false)
         : ObjectVal(device, descriptorPool)
         , m_Desc(descriptorPoolDesc)
-        , m_DescriptorSets(device.GetStdAllocator()) {
+        , m_DescriptorSets(device.GetStdAllocator())
+        , m_SharedResourceHeap(sharedResourceHeap) {
         m_DescriptorSets.reserve(m_Desc.descriptorSetMaxNum);
         for (uint32_t i = 0; i < m_Desc.descriptorSetMaxNum; i++)
             m_DescriptorSets.emplace_back(DescriptorSetVal(device));
@@ -48,6 +49,7 @@ private:
     uint32_t m_DescriptorSetsNum = 0;
     std::array<uint32_t, (size_t)DescriptorType::MAX_NUM> m_DescriptorNums = {};
     bool m_SkipValidation = false;
+    bool m_SharedResourceHeap = false; // all resource descriptors count against "mutableMaxNum"
     Lock m_Lock;
 };
 

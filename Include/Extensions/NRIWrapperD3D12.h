@@ -58,6 +58,12 @@ NriStruct(DescriptorPoolD3D12Desc) {
     ID3D12DescriptorHeap* d3d12ResourceDescriptorHeap;
     ID3D12DescriptorHeap* d3d12SamplerDescriptorHeap;
 
+    // Optional range of each heap used by the pool, allowing several pools to share disjoint ranges of the same heaps
+    uint32_t d3d12ResourceDescriptorOffset;
+    uint32_t d3d12ResourceDescriptorNum;        // 0 - up to the end of the heap
+    uint32_t d3d12SamplerDescriptorOffset;
+    uint32_t d3d12SamplerDescriptorNum;         // 0 - up to the end of the heap
+
     // Allocation limits (D3D12 unrelated, but must match expected usage)
     uint32_t descriptorSetMaxNum;
 };
