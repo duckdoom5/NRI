@@ -380,6 +380,15 @@ NRI_INLINE Result DeviceVal::CreateDescriptor(const TextureViewDesc& textureView
     const TextureVal& textureVal = *(TextureVal*)textureViewDesc.texture;
     const TextureDesc& textureDesc = textureVal.GetDesc();
 
+    if (textureViewDesc.flags & TextureViewBits::DEPTH_STENCIL_READONLY) {
+        const FormatProps& formatProps = GetFormatProps(textureViewDesc.format);
+        bool isShaderResource = textureViewDesc.type == TextureView::TEXTURE || textureViewDesc.type == TextureView::TEXTURE_ARRAY
+            || textureViewDesc.type == TextureView::TEXTURE_CUBE || textureViewDesc.type == TextureView::TEXTURE_CUBE_ARRAY;
+
+        NRI_RETURN_ON_FAILURE(this, isShaderResource, Result::INVALID_ARGUMENT, "'TextureViewBits::DEPTH_STENCIL_READONLY' requires a 'TEXTURE*' view");
+        NRI_RETURN_ON_FAILURE(this, formatProps.isDepth || formatProps.isStencil, Result::INVALID_ARGUMENT, "'TextureViewBits::DEPTH_STENCIL_READONLY' requires a depth-stencil format");
+    }
+
     Dim_t mipNum = textureViewDesc.mipNum == REMAINING ? (textureDesc.mipNum - textureViewDesc.mipOffset) : textureViewDesc.mipNum;
     Dim_t layerNum = textureViewDesc.layerNum == REMAINING ? (textureDesc.layerNum - textureViewDesc.layerOffset) : textureViewDesc.layerNum;
     Dim_t sliceNum = textureViewDesc.sliceNum == REMAINING ? (textureDesc.depth - textureViewDesc.sliceOffset) : textureViewDesc.sliceNum;

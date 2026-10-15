@@ -934,6 +934,14 @@ NriStruct(ComponentMapping) {
     Nri(ComponentSwizzle) a;
 };
 
+NriBits(TextureViewBits, uint8_t,
+    NONE                            = 0,
+
+    // "TEXTURE*" views of depth-stencil formats: read while the texture is in "Layout::DEPTH_STENCIL_READONLY",
+    // i.e. also bound as a read-only depth-stencil attachment (VK: the descriptor expects this layout instead of "SHADER_RESOURCE")
+    DEPTH_STENCIL_READONLY          = NriBit(0)
+);
+
 NriStruct(TextureViewDesc) {
     const NriPtr(Texture) texture;
     Nri(TextureView) type;
@@ -946,6 +954,7 @@ NriStruct(TextureViewDesc) {
     Nri(Dim_t) sliceNum;                    // can be "REMAINING" (METAL: used only by "CmdClearStorage", shader views expose all slices, attachments use "sliceOffset")
     Nri(PlaneBits) planes;                  // accessible planes (missing planes for a "DEPTH_STENCIL_ATTACHMENT" are considered read-only)
     Nri(ComponentMapping) components;
+    Nri(TextureViewBits) flags;
 };
 
 NriStruct(BufferViewDesc) {

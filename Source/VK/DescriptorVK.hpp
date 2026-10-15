@@ -169,6 +169,10 @@ Result DescriptorVK::Create(const TextureViewDesc& textureViewDesc) {
             expectedLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL;
     }
 
+    // Shader reads of a depth-stencil texture that is also bound as a read-only attachment
+    if (textureViewDesc.flags & TextureViewBits::DEPTH_STENCIL_READONLY)
+        expectedLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+
     m_Type = GetImageViewDescriptorType(textureViewDesc.type);
     m_Format = textureViewDesc.format;
     m_TextureView = textureViewDesc.type;
